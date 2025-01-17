@@ -44,7 +44,11 @@ jobs:
           echo "Listing Artifact Repositories in us-west1..."
           gcloud artifacts repositories list --location=us-west1
 
-
+      - name: Check Docker Authentication
+        run: |
+            docker info
+            gcloud auth list
+        
 
       - name: Build and Push Docker Image
         id: build_image
