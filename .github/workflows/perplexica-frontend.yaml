@@ -20,6 +20,8 @@ jobs:
       contents: 'read'
       id-token: 'write'
     runs-on: ubuntu-latest
+    environment: ksa-dev01
+
 
     steps:
       - name: Checkout Code
