@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Duplo Setup
-        uses: duplocloud/actions@main
+        uses: duplocloud/actions/setup@main
         with:
           account-id: ${{ env.CLOUD_ACCOUNT }}
           credentials: ${{ env.CLOUD_CREDENTIALS }}
