@@ -38,6 +38,13 @@ jobs:
 
       - name: Authenticate Docker with GCP
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+      
+      - name: List Artifact Repositories in us-west1
+        run: |
+          echo "Listing Artifact Repositories in us-west1..."
+          gcloud artifacts repositories list --location=us-west1
+
+
 
       - name: Build and Push Docker Image
         id: build_image
