@@ -7,10 +7,10 @@ on:
 env:
   DUPLO_HOST: https://sully.duplocloud.net
   DUPLO_TOKEN: AQAAANCMnd8BFdERjHoAwE_Cl-sBAAAAtOf5UfzFZUCiFDqHk6cr6wAAAAACAAAAAAAQZgAAAAEAACAAAAAQGZTqRgvfb_cRI-YpYrE-5-BvgIe1bFbFHIOKbs1ruAAAAAAOgAAAAAIAACAAAAB7-FKfd3nRAqF4eNwds0_T7R5G52_j-vyYZRBt8kiGspAAAADYKuppDllqSaaHm7tPPyYlfPwL8lAFMejekvEbgAZfmv9Rfr-dZWoQv2jxOzYsFBNYXOXrG1ZxZMNhl4_JtatTvdFsv8N5JEafcqT4zZFwLjaLCbEmALDMdoNLjZDNs47WmHC-yaYZ6yC6k3XbvCqLki-1D_roKuYuaok8RlTMZpi_L2Q4P60q1WO0c9H-y7FAAAAAmIvewZK013RnaFm_nIZ4SnGm2NQrr60wl9Ky2OyTgBr7ipVX3r3Kya-x0k6M1Ys92ior1xBlR6erOYaKIxW9og
-  DUPLO_TENANT: ksa-dev01
+  DUPLO_TENANT: dev01
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
-  CLOUD_ACCOUNT: sullyai-nonprod-ksa
-  ARTIFACT_REGISTRY: me-central2-docker.pkg.dev/sullyai-nonprod-ksa/perplexica/backend
+  CLOUD_ACCOUNT: sullyai-nonprod
+  ARTIFACT_REGISTRY: us-west1-docker.pkg.dev/sullyai-nonprod/perplexica/perplexica-backend
   SERVICE_NAME_BACKEND: perplexica-backend
 
 jobs:
