@@ -10,7 +10,7 @@ env:
   DUPLO_TENANT: dev01
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
   CLOUD_ACCOUNT: sullyai-nonprod
-  ARTIFACT_REGISTRY: us-west1-docker.pkg.dev/sullyai-nonprod/perplexica/frontend
+  ARTIFACT_REGISTRY: us-west1-docker.pkg.dev/sullyai-nonprod/perplexica
   SERVICE_NAME_FRONTEND: perplexica-frontend
 
 jobs:
