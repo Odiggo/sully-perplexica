@@ -45,7 +45,7 @@ jobs:
       #   run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Authenticate Docker with GCP
-        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+        run: gcloud auth configure-docker us-west1-docker.pkg.dev
       
       # - name: List Artifact Repositories in us-west1
       #   run: |
