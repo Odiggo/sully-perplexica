@@ -61,7 +61,8 @@ jobs:
 
       - name: Build and Push Docker Image
         id: build_image
-        uses: duplocloud/actions/build-image@3c4899bad07d3c7b34e46888056fa8d7d28b73fd
+        # uses: duplocloud/actions/build-image@3c4899bad07d3c7b34e46888056fa8d7d28b73fd
+        uses: duplocloud/actions/build-image@main
         with:
           registry: ${{ env.ARTIFACT_REGISTRY }}
           repo: perplexica-backend
