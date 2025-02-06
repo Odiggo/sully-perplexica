@@ -1,36 +1,35 @@
 name: Build & Deploy Perplexica Backend
 on:
   workflow_dispatch:
-    # inputs:
-    #   tenant_name:
-    #     description: 'Target DuploCloud tenant'
-    #     required: true
-    #     default: 'dev01'
-    #     type: choice
-    #     options:
-    #       - dev01
-    #       - prod
-    #       - ksa-prod
-  push:
-    branches:
-      - master
-      - cicd/duplo_setup
+    inputs:
+      tenant_name:
+        description: 'Target DuploCloud tenant'
+        required: true
+        default: 'dev01'
+        type: choice
+        options:
+          - dev01
+          - prod
+          - ksa-prod
+  # push:
+  #   branches:
+  #     - master
+  #     - cicd/duplo_setup
 
 env:
   DUPLO_HOST: https://sully.duplocloud.net
   DUPLO_TOKEN: ${{ secrets.DUPLO_TOKEN }}
   DUPLO_TENANT: dev01
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
-  CLOUD_ACCOUNT: sullyai-nonprod
-  ARTIFACT_REGISTRY: us-west1-docker.pkg.dev/sullyai-nonprod/perplexica
+  CLOUD_ACCOUNT: ${{ vars.CLOUD_ACCOUNT }}
+  ARTIFACT_REGISTRY: ${{ vars.ARTIFACT_REGISTRY }}
   SERVICE_NAME_BACKEND: perplexica-backend
 
 jobs:
   build-and-deploy-backend:
     name: Build and Deplo Backendend Service 
     runs-on: ubuntu-latest
-    environment: dev01
-
+    environment: ${{ inputs.tenant_name }}
 
     steps:
       - name: Checkout Code
@@ -38,15 +37,15 @@ jobs:
 
       - name: Duplo Setup
         uses: duplocloud/actions@main
-        # with:
-        #   account-id: ${{ env.CLOUD_ACCOUNT }}
-        #   credentials: ${{ env.CLOUD_CREDENTIALS }}
+        with:
+          account-id: ${{ env.CLOUD_ACCOUNT }}
+          credentials: ${{ env.CLOUD_CREDENTIALS }}
 
       # - name: Set Version for the Service
       #   run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # - name: Authenticate Docker with GCP
-      #   run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+      - name: Authenticate Docker with GCP
+        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
       
       # - name: List Artifact Repositories in us-west1
       #   run: |
@@ -61,8 +60,8 @@ jobs:
 
       - name: Build and Push Docker Image
         id: build_image
-        # uses: duplocloud/actions/build-image@3c4899bad07d3c7b34e46888056fa8d7d28b73fd
-        uses: duplocloud/actions/build-image@main
+        uses: duplocloud/actions/build-image@3c4899bad07d3c7b34e46888056fa8d7d28b73fd
+        # uses: duplocloud/actions/build-image@main
         with:
           registry: ${{ env.ARTIFACT_REGISTRY }}
           repo: perplexica-backend
