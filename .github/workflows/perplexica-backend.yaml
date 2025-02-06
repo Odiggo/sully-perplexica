@@ -1,12 +1,24 @@
 name: Build & Deploy Perplexica Backend
 on:
+  workflow_dispatch:
+    # inputs:
+    #   tenant_name:
+    #     description: 'Target DuploCloud tenant'
+    #     required: true
+    #     default: 'dev01'
+    #     type: choice
+    #     options:
+    #       - dev01
+    #       - prod
+    #       - ksa-prod
   push:
     branches:
       - master
+      - cicd/duplo_setup
 
 env:
   DUPLO_HOST: https://sully.duplocloud.net
-  DUPLO_TOKEN: AQAAANCMnd8BFdERjHoAwE_Cl-sBAAAAtOf5UfzFZUCiFDqHk6cr6wAAAAACAAAAAAAQZgAAAAEAACAAAAAQGZTqRgvfb_cRI-YpYrE-5-BvgIe1bFbFHIOKbs1ruAAAAAAOgAAAAAIAACAAAAB7-FKfd3nRAqF4eNwds0_T7R5G52_j-vyYZRBt8kiGspAAAADYKuppDllqSaaHm7tPPyYlfPwL8lAFMejekvEbgAZfmv9Rfr-dZWoQv2jxOzYsFBNYXOXrG1ZxZMNhl4_JtatTvdFsv8N5JEafcqT4zZFwLjaLCbEmALDMdoNLjZDNs47WmHC-yaYZ6yC6k3XbvCqLki-1D_roKuYuaok8RlTMZpi_L2Q4P60q1WO0c9H-y7FAAAAAmIvewZK013RnaFm_nIZ4SnGm2NQrr60wl9Ky2OyTgBr7ipVX3r3Kya-x0k6M1Ys92ior1xBlR6erOYaKIxW9og
+  DUPLO_TOKEN: ${{ secrets.DUPLO_HOST }}
   DUPLO_TENANT: dev01
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
   CLOUD_ACCOUNT: sullyai-nonprod
@@ -22,29 +34,29 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Duplo Setup
         uses: duplocloud/actions/setup@main
-        with:
-          account-id: ${{ env.CLOUD_ACCOUNT }}
-          credentials: ${{ env.CLOUD_CREDENTIALS }}
+        # with:
+        #   account-id: ${{ env.CLOUD_ACCOUNT }}
+        #   credentials: ${{ env.CLOUD_CREDENTIALS }}
 
-      - name: Set Version for the Service
-        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      # - name: Set Version for the Service
+      #   run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Authenticate Docker with GCP
-        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+      # - name: Authenticate Docker with GCP
+      #   run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
       
-      - name: List Artifact Repositories in us-west1
-        run: |
-          echo "Listing Artifact Repositories in us-west1..."
-          gcloud artifacts repositories list --location=us-west1
+      # - name: List Artifact Repositories in us-west1
+      #   run: |
+      #     echo "Listing Artifact Repositories in us-west1..."
+      #     gcloud artifacts repositories list --location=us-west1
 
-      - name: Check Docker Authentication
-        run: |
-            docker info
-            gcloud auth list
+      # - name: Check Docker Authentication
+      #   run: |
+      #       docker info
+      #       gcloud auth list
         
 
       - name: Build and Push Docker Image
@@ -58,9 +70,6 @@ jobs:
           tags: ${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
           push: true
           cache: true
-          extra-args: >
-            --build-arg BUILD_COMMIT=${{ env.SHORT_SHA }}
-            --build-arg SERVICE_NAME=${{ env.SERVICE_NAME_BACKEND }}
 
       # - name: Update Service in Duplo
       #   uses: duplocloud/actions/update-image@main
