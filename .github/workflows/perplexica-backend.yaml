@@ -1,0 +1,70 @@
+name: Build & Deploy Perplexica Backend
+on:
+  push:
+    branches:
+      - master
+
+env:
+  DUPLO_HOST: https://sully.duplocloud.net
+  DUPLO_TOKEN: AQAAANCMnd8BFdERjHoAwE_Cl-sBAAAAtOf5UfzFZUCiFDqHk6cr6wAAAAACAAAAAAAQZgAAAAEAACAAAAAQGZTqRgvfb_cRI-YpYrE-5-BvgIe1bFbFHIOKbs1ruAAAAAAOgAAAAAIAACAAAAB7-FKfd3nRAqF4eNwds0_T7R5G52_j-vyYZRBt8kiGspAAAADYKuppDllqSaaHm7tPPyYlfPwL8lAFMejekvEbgAZfmv9Rfr-dZWoQv2jxOzYsFBNYXOXrG1ZxZMNhl4_JtatTvdFsv8N5JEafcqT4zZFwLjaLCbEmALDMdoNLjZDNs47WmHC-yaYZ6yC6k3XbvCqLki-1D_roKuYuaok8RlTMZpi_L2Q4P60q1WO0c9H-y7FAAAAAmIvewZK013RnaFm_nIZ4SnGm2NQrr60wl9Ky2OyTgBr7ipVX3r3Kya-x0k6M1Ys92ior1xBlR6erOYaKIxW9og
+  DUPLO_TENANT: dev01
+  CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
+  CLOUD_ACCOUNT: sullyai-nonprod
+  ARTIFACT_REGISTRY: us-west1-docker.pkg.dev/sullyai-nonprod/perplexica
+  SERVICE_NAME_BACKEND: perplexica-backend
+
+jobs:
+  build-and-deploy-backend:
+    name: Build and Deplo Backendend Service 
+    runs-on: ubuntu-latest
+    environment: dev01
+
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Duplo Setup
+        uses: duplocloud/actions/setup@main
+        with:
+          account-id: ${{ env.CLOUD_ACCOUNT }}
+          credentials: ${{ env.CLOUD_CREDENTIALS }}
+
+      - name: Set Version for the Service
+        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Authenticate Docker with GCP
+        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+      
+      - name: List Artifact Repositories in us-west1
+        run: |
+          echo "Listing Artifact Repositories in us-west1..."
+          gcloud artifacts repositories list --location=us-west1
+
+      - name: Check Docker Authentication
+        run: |
+            docker info
+            gcloud auth list
+        
+
+      - name: Build and Push Docker Image
+        id: build_image
+        uses: duplocloud/actions/build-image@3c4899bad07d3c7b34e46888056fa8d7d28b73fd
+        with:
+          registry: ${{ env.ARTIFACT_REGISTRY }}
+          repo: perplexica-backend
+          dockerfile: backend.dockerfile
+          tag-strategy: DATE
+          tags: ${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
+          push: true
+          cache: true
+          extra-args: >
+            --build-arg BUILD_COMMIT=${{ env.SHORT_SHA }}
+            --build-arg SERVICE_NAME=${{ env.SERVICE_NAME_BACKEND }}
+
+      # - name: Update Service in Duplo
+      #   uses: duplocloud/actions/update-image@main
+      #   with:
+      #     type: service
+      #     name: ${{ env.SERVICE_NAME_BACKEND }}
+      #     image: ${{ steps.build_image.outputs.image }}:${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
