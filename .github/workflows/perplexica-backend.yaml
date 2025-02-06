@@ -18,7 +18,7 @@ on:
 
 env:
   DUPLO_HOST: https://sully.duplocloud.net
-  DUPLO_TOKEN: ${{ secrets.DUPLO_HOST }}
+  DUPLO_TOKEN: ${{ secrets.DUPLO_TOKEN }}
   DUPLO_TENANT: dev01
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
   CLOUD_ACCOUNT: sullyai-nonprod
