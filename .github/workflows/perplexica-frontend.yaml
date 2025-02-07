@@ -37,9 +37,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Debug Environment Variables
-        run: echo "DUPLO_TOKEN is set to ${{ env.DUPLO_TOKEN }}"
-        shell: bash
+      - name: Duplo Setup
+        uses: duplocloud/actions@main
+        with:
+          account-id: ${{ env.CLOUD_ACCOUNT }}
+          credentials: ${{ env.CLOUD_CREDENTIALS }}
 
       - name: Authenticate Docker with GCP
         run: gcloud auth configure-docker us-west1-docker.pkg.dev

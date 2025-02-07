@@ -48,8 +48,8 @@ jobs:
           registry: ${{ env.ARTIFACT_REGISTRY }}
           repo: perplexica-backend
           dockerfile: backend.dockerfile
-          tag-strategy: DATE
-          tags: ${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
+          # tag-strategy: DATE
+          # tags: ${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
           push: true
           cache: true
 
