@@ -11,7 +11,9 @@ on:
         options:
           - dev01
           - prod
+          - stage
           - ksa-prod
+          - ksa-dev01
 
 env:
   DUPLO_HOST: https://sully.duplocloud.net
