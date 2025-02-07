@@ -23,8 +23,9 @@ env:
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
   CLOUD_ACCOUNT: ${{ vars.CLOUD_ACCOUNT }}
   ARTIFACT_REGISTRY: ${{ vars.ARTIFACT_REGISTRY }}
-  NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
-  NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL }}
+  # NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+  # NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL }}
+  PERPLEXICA_BACKEND_DOMAIN: ${{ vars.PERPLEXICA_BACKEND_DOMAIN }}
 
 jobs:
   build-and-deploy-frontend:
@@ -58,8 +59,8 @@ jobs:
           push: true
           cache: true
           build-args: >
-            NEXT_PUBLIC_WS_URL=${{ env.NEXT_PUBLIC_WS_URL }}
-            NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_WS_URL=wss://${{ env.PERPLEXICA_BACKEND_DOMAIN }}
+            NEXT_PUBLIC_API_URL=https://${{ env.PERPLEXICA_BACKEND_DOMAIN }}/api
 
       - name: Update Service in Duplo
         uses: duplocloud/actions/update-image@main
