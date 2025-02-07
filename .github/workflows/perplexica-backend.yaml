@@ -11,15 +11,11 @@ on:
           - dev01
           - prod
           - ksa-prod
-  # push:
-  #   branches:
-  #     - master
-  #     - cicd/duplo_setup
 
 env:
   DUPLO_HOST: https://sully.duplocloud.net
   DUPLO_TOKEN: ${{ secrets.DUPLO_TOKEN }}
-  DUPLO_TENANT: dev01
+  DUPLO_TENANT: ${{ inputs.tenant_name }}
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
   CLOUD_ACCOUNT: ${{ vars.CLOUD_ACCOUNT }}
   ARTIFACT_REGISTRY: ${{ vars.ARTIFACT_REGISTRY }}
@@ -27,7 +23,7 @@ env:
 
 jobs:
   build-and-deploy-backend:
-    name: Build and Deplo Backendend Service 
+    name: Build and Deploy Backend Service 
     runs-on: ubuntu-latest
     environment: ${{ inputs.tenant_name }}
 
@@ -43,7 +39,6 @@ jobs:
 
       - name: Authenticate Docker with GCP
         run: gcloud auth configure-docker us-west1-docker.pkg.dev
-      
 
       - name: Build and Push Docker Image
         id: build_image
@@ -62,4 +57,5 @@ jobs:
         with:
           type: service
           name: ${{ env.SERVICE_NAME_BACKEND }}
-          image: ${{ steps.build_image.outputs.image }}:${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
+          # image: ${{ steps.build_image.outputs.image }}:${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
+          image: ${{ steps.build_image.outputs.uri }}
