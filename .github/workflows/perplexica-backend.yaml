@@ -1,4 +1,5 @@
 name: Build & Deploy Perplexica Backend
+run-name: Build & Deploy ${{ github.event.inputs.tenant_name }} Backend
 on:
   workflow_dispatch:
     inputs:

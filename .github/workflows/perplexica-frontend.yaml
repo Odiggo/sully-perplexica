@@ -1,4 +1,5 @@
 name: Build & Deploy Perplexica Frontend
+run-name: Build & Deploy ${{ github.event.inputs.tenant_name }} Frontend
 on:
   workflow_dispatch:
     inputs:
