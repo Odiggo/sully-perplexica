@@ -11,27 +11,29 @@ on:
         options:
           - dev01
           - prod
+          - stage
           - ksa-prod
+          - ksa-dev01
 
 env:
   DUPLO_HOST: https://sully.duplocloud.net
   DUPLO_TOKEN: ${{ secrets.DUPLO_TOKEN }}
   DUPLO_TENANT: ${{ inputs.tenant_name }}
+  SERVICE_NAME: perplexica-frontend
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
   CLOUD_ACCOUNT: ${{ vars.CLOUD_ACCOUNT }}
   ARTIFACT_REGISTRY: ${{ vars.ARTIFACT_REGISTRY }}
-  SERVICE_NAME: perplexica-frontend
   NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
   NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL }}
 
 jobs:
   build-and-deploy-frontend:
-    name: Build and Deplo Frontend Service 
+    name: Build and Deploy Frontend Service 
     permissions:
       contents: 'read'
       id-token: 'write'
     runs-on: ubuntu-latest
-    environment: dev01
+    environment: ${{ inputs.tenant_name }}
 
     steps:
       - name: Checkout Code
@@ -44,17 +46,15 @@ jobs:
           credentials: ${{ env.CLOUD_CREDENTIALS }}
 
       - name: Authenticate Docker with GCP
-        run: gcloud auth configure-docker us-west1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
 
       - name: Build and Push Docker Image
         id: build_image
         uses: duplocloud/actions/build-image@3c4899bad07d3c7b34e46888056fa8d7d28b73fd
         with:
-          registry: ${{ env.ARTIFACT_REGISTRY }}
-          repo: perplexica-frontend
+          registry: ${{ env.ARTIFACT_REGISTRY }}/${{ env.CLOUD_ACCOUNT }}/perplexica
+          repo: ${{ env.SERVICE_NAME }}
           dockerfile: app.dockerfile
-          # tag-strategy: DATE
-          # tags: ${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
           push: true
           cache: true
           build-args: >
@@ -66,5 +66,4 @@ jobs:
         with:
           type: service
           name: ${{ env.SERVICE_NAME }}
-          # image: ${{ steps.build_image.outputs.image }}:${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
           image: ${{ steps.build_image.outputs.uri }}

@@ -15,12 +15,12 @@ on:
 
 env:
   DUPLO_HOST: https://sully.duplocloud.net
+  SERVICE_NAME: perplexica-backend
   DUPLO_TOKEN: ${{ secrets.DUPLO_TOKEN }}
   DUPLO_TENANT: ${{ inputs.tenant_name }}
   CLOUD_CREDENTIALS: ${{ secrets.WORKFLOW_SERVICE_ACCOUNT }}
   CLOUD_ACCOUNT: ${{ vars.CLOUD_ACCOUNT }}
   ARTIFACT_REGISTRY: ${{ vars.ARTIFACT_REGISTRY }}
-  SERVICE_NAME_BACKEND: perplexica-backend
 
 jobs:
   build-and-deploy-backend:
@@ -39,17 +39,15 @@ jobs:
           credentials: ${{ env.CLOUD_CREDENTIALS }}
 
       - name: Authenticate Docker with GCP
-        run: gcloud auth configure-docker us-west1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
 
       - name: Build and Push Docker Image
         id: build_image
         uses: duplocloud/actions/build-image@3c4899bad07d3c7b34e46888056fa8d7d28b73fd
         with:
-          registry: ${{ env.ARTIFACT_REGISTRY }}
-          repo: perplexica-backend
+          registry: ${{ env.ARTIFACT_REGISTRY }}/${{ env.CLOUD_ACCOUNT }}/perplexica
+          repo: ${{ env.SERVICE_NAME }}
           dockerfile: backend.dockerfile
-          # tag-strategy: DATE
-          # tags: ${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
           push: true
           cache: true
 
@@ -57,6 +55,5 @@ jobs:
         uses: duplocloud/actions/update-image@main
         with:
           type: service
-          name: ${{ env.SERVICE_NAME_BACKEND }}
-          # image: ${{ steps.build_image.outputs.image }}:${{ env.DUPLO_TENANT }}-${{ env.SHORT_SHA }}
+          name: ${{ env.SERVICE_NAME }}
           image: ${{ steps.build_image.outputs.uri }}
