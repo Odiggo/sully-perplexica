@@ -43,7 +43,7 @@
     "express": "^4.19.2",
     "html-to-text": "^9.0.5",
     "langchain": "^0.1.30",
-    "mammoth": "^1.8.0",
+    "mammoth": "^1.11.0",
     "multer": "^1.4.5-lts.1",
     "pdf-parse": "^1.1.1",
     "winston": "^3.13.0",
